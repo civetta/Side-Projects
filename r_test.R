@@ -23,5 +23,3 @@ ConnectToDB_IM <- function() {
 }
 
 testing <- ConnectToDB_IM()
-keep <- "I want to Keep This Change"
-dont <- "I don't want to keep this change"
