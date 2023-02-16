@@ -1,6 +1,8 @@
 import string
 
 def generate_square(keyword):
+    #square is a blank array. keyword+alaphabet. For each letter in that add it to square, don't duplicate. 
+    #If keyword is lune would return luneabcdfghijkmopqrstvwxyz
     square = []
     for c in keyword + 'abcdefghijklmnopqrstuvwxyz':
         if c not in square:
@@ -29,6 +31,7 @@ def decode_square(list_of_nums, square):
 # it's length isn't equal to
 # the length of original text
 def generateKey(string, key):
+    #If key is lune and there are 20 letters in the cipher it will return lunelunelunelunelune
     key = list(key)
     if len(string) == len(key):
         return(key)
@@ -42,12 +45,30 @@ def generateKey(string, key):
 # encrypted text and returns
 # the original text
 def originalText(cipher_text, key):
+    alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    #print(key)
+    #print(cipher_text)
     orig_text = []
+    #if first leter in cipher is a, we wil have 0 + 12(L for Lune) + 26 = 38 % 26 = 12. So it would return L.
     for i in range(len(cipher_text)):
+        current_letter =cipher_text[i].lower()
+        #print(current_letter)
+        #print(alpha.index(current_letter))
+        #print(key[i])
+        #print(alpha.index(key[i]))
+        x=(alpha.index(current_letter) - alpha.index(key[i]) + 26) % 26
+        #print(x)
+        #print(alpha[x])
+        
+        """for i in range(len(cipher_text)):
         x = (ord(cipher_text[i]) -
              ord(key[i]) + 26) % 26
+        print(x)
+        #turns remainder into unicode so it can easily be turned into a character later with (ch)
         x += ord('A')
-        orig_text.append(chr(x))
+         """
+        orig_text.append(alpha[x])
     return("" . join(orig_text))
 
 #copies and pasted the pdf from the Introductory Primer To the Realm of Sigtoria into a text document. 
@@ -57,32 +78,20 @@ def open_string_text():
     with open('string_from_doc.txt', 'r') as file:
         data = file.read().replace('\n', ' ')
     import string
+    #filtering to just letters of the alphabets, gets rid of symbols and numbers
     printable = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '
     data = ''.join(filter(lambda x: x in printable, data))
-    data = data.replace(';', ' ')
-    data = data.replace('[', ' ')
-    data = data.replace(']', ' ')
-    data = data.replace('(', ' ')
-    data = data.replace(')', ' ')
-    data = data.replace('.', ' ')
-    data = data.replace(',', ' ')
-    data = data.replace('|', ' ')
-    data = data.replace('!', ' ')
-    data = data.replace(':', ' ')
-    data = data.replace('&', ' ')
-    data = data.replace('[\t]', ' ')
-    data = data.replace('    ', ' ')
-    data = data.replace('   ', ' ')
-    data = data.replace('  ', ' ')
-    result = ''.join([i for i in data if not i.isdigit()])
+    result = data
+    #lower case, and then using split to get rid of weird spaceing issues and to make a list
     result = result.lower()
     result_list = result.split()
+    #removing duplicates
     final_result  = list(set(result_list))
     print(final_result)
     return(final_result)
 
 
-
+#the code rian original gave us
 initial_coder = ("""45 51 25 41 44 44 24 45 31 22 44 11 31 35 54 13 12 52 34 54 12 52 51 52 14 43 43 52 43 12 
                 23 23 52 51 54 55 55 25 14 53 14 55 11 21 54 43 53 33 53 13 31 14 25 14 13 23 21 51 53 43 
                 23 24 45 54 13 31 11 31 44 15 33 54 33 14 53 14 32 33 35 51 45 51 45 43 24 51 23 13 35 51
@@ -92,21 +101,24 @@ initial_coder = ("""45 51 25 41 44 44 24 45 31 22 44 11 31 35 54 13 12 52 34 54 
                 22 54 12 54 11 33 54 41 43 31 43 11 23 23 23 14 55 23 21 42 21 44 44 24 15 51 54 51 45 
                 15 53 43 23 55 42 23 44 51 23 14 31 41 35 14 25 53 43 23 33 23 14 13 13 51 35""")
 
-#initial_coder = """24 13 44 32 22 23 12"""
-#list_of_nums = ['11','22']
+
 list_of_nums =initial_coder.split()
 #Takes a keyword and creates a string, so abcde or sigtorabd. This is the order the string appears in the square.
 list_of_keys = open_string_text()
 
 for i in list_of_keys:
+    #keyword = 'lune'
     keyword = i
     square = generate_square(keyword)
     coded_string = decode_square(list_of_nums, square)
+    #coded_string = coded_string.lower()
     key = generateKey(coded_string, keyword)
+    #coded_string=['L','V','P']
     decoded_string= originalText(coded_string,key)
-    if 'THE' in decoded_string:
-        if 'IS' in decoded_string:
-            if 'IN' in decoded_string:
+    #print(decoded_string)
+    if 'the' in decoded_string:
+        if 'is' in decoded_string:
+            if 'in' in decoded_string:
                 print("")
                 print("")
                 print(keyword)
