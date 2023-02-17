@@ -10,29 +10,6 @@ from math import sqrt
 import string
 from kras_test import find_key_length
 
-def generate_square(keyword):
-    #square is a blank array. keyword+alaphabet. For each letter in that add it to square, don't duplicate. 
-    #If keyword is lune would return luneabcdfghijkmopqrstvwxyz
-    square = []
-    for c in keyword + 'abcdefghijklmnopqrstuvwxy':
-        if c not in square:
-            square.append(c)
-    square = ''.join(square)
-    return square
-
-def decode_square(list_of_nums, square):
-    plain = []
-    for i in range(len(list_of_nums)):
-        #Row and col takes the first and last number, so 45 has row=4 and column = 5
-        col = int(list_of_nums[i][0])
-        row = int(list_of_nums[i][1])
-        #square is a string. So 11 if key is sigtora would return A. So row-1*5=0 + col(1)-1=0, so it all equals 0 
-        # so it returns the first item in the square list which is S.
-        letter = square[(row-1)*5 + col-1]
-        #Appending the letter to a list. 
-        plain.append(letter)
-        output= (''.join(plain))
-    return plain
 
 
 def generate_array(key):
@@ -41,7 +18,7 @@ def generate_array(key):
     :param key: transposition word
     :return: array
     """
-    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXY'
+    alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'
     array = []
     _tmp = []
     key = re.sub(r'[^a-zA-Z]+', '', key)  # remove non-alpha character
@@ -71,26 +48,22 @@ def decode(numbers, array):
 
     numbers = re.sub(r'[\D]+', '', numbers)  # remove non-digit character
 
-    text = ''
-
+    xy = ''
+    yx = ''
     for number in range(0, len(numbers), 2):
         try:
             oy = int(numbers[number]) - 1
             ox = int(numbers[number + 1]) - 1
-            text += array[oy][ox]
+            yx += array[oy][ox]
+            xy += array[ox][oy]
         except IndexError:
             pass
         continue
 
-    return text
+    return [xy,yx]
 
 
 
-
-# This function generates the
-# key in a cyclic manner until
-# it's length isn't equal to
-# the length of original text
 def generateKey(string, key):
     #If key is lune and there are 20 letters in the cipher it will return lunelunelunelunelune
     key = list(key)
@@ -108,48 +81,16 @@ def generateKey(string, key):
 def originalText(cipher_text, key):
     alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 
     'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-    #print(key)
-    #print(cipher_text)
     orig_text = []
     #if first leter in cipher is a, we wil have 0 + 12(L for Lune) + 26 = 38 % 26 = 12. So it would return L.
     for i in range(len(cipher_text)):
         current_letter =cipher_text[i].lower()
-        #print(current_letter)
-        #print(alpha.index(current_letter))
-        #print(key[i])
-        #print(alpha.index(key[i]))
         x=(alpha.index(current_letter) - alpha.index(key[i]) + 26) % 26
-        #print(x)
-        #print(alpha[x])
-        
-        """for i in range(len(cipher_text)):
-        x = (ord(cipher_text[i]) -
-             ord(key[i]) + 26) % 26
-        print(x)
-        #turns remainder into unicode so it can easily be turned into a character later with (ch)
-        x += ord('A')
-         """
         orig_text.append(alpha[x])
     return("" . join(orig_text))
 
-#copies and pasted the pdf from the Introductory Primer To the Realm of Sigtoria into a text document. 
-#Doing the really long way of ceaning it up and making it into a list of string.
-#Going to go through each one and see which one returns the words Rian said were in the answer.
-def open_string_text():
-    with open('string_from_doc.txt', 'r') as file:
-        data = file.read().replace('\n', ' ')
-    import string
-    #filtering to just letters of the alphabets, gets rid of symbols and numbers
-    printable = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '
-    data = ''.join(filter(lambda x: x in printable, data))
-    result = data
-    #lower case, and then using split to get rid of weird spaceing issues and to make a list
-    result = result.lower()
-    result_list = result.split()
-    #removing duplicates
-    final_result  = list(set(result_list))
-    #print(final_result)
-    return(final_result)
+
+
 
 possible_keys = ['abbey', 'able', 'access', 'across', 'added', 'afront', 'after', 'again', 'ages', 'agree', 'alley', 
  'also', 'amando', 'arcane', 'around', 'arrive', 'arts', 'asked', 'astral', 'author', 'aware', 'away', 'awoke', 'bach', 'back', 'based',
@@ -195,43 +136,23 @@ initial_coder = ("""45 51 25 41 44 44 24 45 31 22 44 11 31 35 54 13 12 52 34 54 
                 15 53 43 23 55 42 23 44 51 23 14 31 41 35 14 25 53 43 23 33 23 14 13 13 51 35""")
 
 
-
-
-
-list_of_nums =initial_coder.split()
-#Takes a keyword and creates a string, so abcde or sigtorabd. This is the order the string appears in the square.
-#list_of_keys = open_string_text()
-#print(list_of_keys)
-#print("")
-#print("")
-##lister = []
-#for key in list_of_keys:
-    #if len(key)>3:
-        #if len(key)<7:
-            #lister.append(key)
-#lister=sorted(lister)
-
-for i in possible_keys:
-    #keyword = ''
-    keyword = i
-    #square = generate_square(keyword)
+for keyword in possible_keys:
+    #keyword = 'gods'
     square = generate_array(keyword)
     coded_string = decode(initial_coder,square)
-    #print(coded_string)
-
-    #a=find_key_length(coded_string_key,3,5)
-    #print(a)
-    key = generateKey(coded_string, keyword)
-    #coded_string=['L','V','P']
-    decoded_string= originalText(coded_string,key)
-    #print(decoded_string)
-    if 'the' in decoded_string:
-        if 'is' in decoded_string:
-            if 'in' in decoded_string:
-                print("")
-                print("")
-                print(keyword)
-                print("Decoded String :", decoded_string)
-                print("")
-                print("")
-
+    for s in coded_string:
+        keystream = generateKey(s, keyword)
+        answer = originalText(s, keystream)
+        if 'the' in answer:
+            if "is" in answer:
+                if "in" in answer:
+                    print("")
+                    print("")
+                    if coded_string.index(s) == 0:
+                        print('YX')
+                    else:
+                        print('YX')
+                    print(keyword)
+                    print("Decoded String :", answer)
+                    print("")
+                    print("")
